@@ -1,0 +1,78 @@
+-- Mochi Hub | Full Gem Farm for 99 Nights Forest Map
+local player = game.Players.LocalPlayer
+local hrp = player.Character and player.Character:WaitForChild("HumanoidRootPart")
+local uiLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/MQPS7/UI-Library/main/UILib.lua"))() -- ตัวอย่าง UI library
+local mainUI = uiLib:CreateWindow("Mochi Hub")
+
+-- Variables
+local farming = false
+local autoServerHop = false
+
+-- ตัวอย่างตำแหน่งกล่องเพรชในแมพ 99 คืน (แก้ตามตำแหน่งจริงในเกม)
+local chestPositions = {
+    Vector3.new(10,0,5),
+    Vector3.new(20,0,15),
+    Vector3.new(30,0,25),
+    Vector3.new(40,0,35),
+}
+
+-- ฟังก์ชันวาปไปกล่อง
+local function warpToChest(position)
+    if hrp then
+        hrp.CFrame = CFrame.new(position)
+    end
+end
+
+-- ฟังก์ชันเก็บเพรช (ปรับให้ตรงกับเกมจริง)
+local function collectChest()
+    -- ตัวอย่าง: หากเกมมี RemoteEvent เก็บเพรช
+    -- local remote = game:GetService("ReplicatedStorage"):WaitForChild("CollectChest")
+    -- remote:FireServer()
+end
+
+-- ฟังก์ชันฟาร์มเพรช
+local function farmGems()
+    farming = true
+    spawn(function()
+        while farming do
+            for _, pos in pairs(chestPositions) do
+                warpToChest(pos)
+                wait(0.5)
+                collectChest()
+                wait(1)
+            end
+            if autoServerHop then
+                -- ตัวอย่าง Server Hop
+                -- local TeleportService = game:GetService("TeleportService")
+                -- TeleportService:Teleport(game.PlaceId, player)
+                break
+            end
+        end
+    end)
+end
+
+-- ฟังก์ชันหยุดฟาร์ม
+local function stopFarming()
+    farming = false
+end
+
+-- UI
+mainUI:Toggle("Auto Farm Gems", function(state)
+    if state then
+        farmGems()
+    else
+        stopFarming()
+    end
+end)
+
+mainUI:Toggle("Auto Server Hop", function(state)
+    autoServerHop = state
+end)
+
+mainUI:Button("Warp to First Chest", function()
+    warpToChest(chestPositions[1])
+end)
+
+mainUI:Button("Stop Farming", function()
+    stopFarming()
+end)
